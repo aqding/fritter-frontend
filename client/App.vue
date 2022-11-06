@@ -27,6 +27,95 @@ export default {
     // Clear alerts on page refresh
     this.$store.state.alerts = {};
   },
+  methods: {
+    async getFollowing() {
+      const url = `/api/follow/following/${this.$store.state.id}`;
+      try {
+        const r = await fetch(url);
+        const res = await r.json();
+        if (!r.ok) {
+          throw new Error(res.error);
+        }
+        this.$store.commit(
+          "updateFollowing",
+          new Set(res.following.map((follow) => follow.followeeName))
+        );
+      } catch (e) {
+        this.$set(this.alerts, e, "error");
+        setTimeout(() => this.$delete(this.alerts, e), 3000);
+      }
+    },
+
+    async getMultifeeds() {
+      const url = `/api/multifeed/user?author=${this.$store.state.id}`;
+      console.log(url);
+      try {
+        const r = await fetch(url);
+        const res = await r.json();
+        console.log(res);
+        if (!r.ok) {
+          throw new Error(res.error);
+        }
+
+        this.$store.commit("updateMultifeeds", res);
+        this.$store.commit("updateActiveMultifeed", "All");
+        this.$store.commit("updateFilteredContent", null);
+        console.log(this.$store.state.multifeeds);
+      } catch (e) {
+        this.$set(this.alerts, e, "error");
+        setTimeout(() => this.$delete(this.alerts, e), 3000);
+      }
+    },
+
+    async getFreetsInit() {
+      const url = "/api/freets";
+      try {
+        const r = await fetch(url);
+        const res = await r.json();
+        if (!r.ok) {
+          throw new Error(res.error);
+        }
+
+        this.$store.commit("updateFreets", res);
+        console.log(this.$store.state.freets);
+      } catch (e) {
+        this.$set(this.alerts, e, "error");
+        setTimeout(() => this.$delete(this.alerts, e), 3000);
+      }
+    },
+
+    async getUsersInit() {
+      const url = "/api/users";
+      try {
+        const r = await fetch(url);
+        const res = await r.json();
+        if (!r.ok) {
+          throw new Error(res.error);
+        }
+        console.log(res);
+        const newMap = new Map(
+          res.map((object) => [object.username, object._id])
+        );
+        this.$store.commit("updateUserMap", newMap);
+        this.$store.commit(
+          "updateUsers",
+          res.map((user) => user.username)
+        );
+        console.log(this.$store.state.users);
+        console.log(this.$store.state.userMap);
+      } catch (e) {
+        this.$set(this.alerts, e, "error");
+        setTimeout(() => this.$delete(this.alerts, e), 3000);
+      }
+    },
+  },
+
+  mounted() {
+    this.getFreetsInit();
+    this.getFollowing();
+    this.getMultifeeds();
+    this.getUsersInit();
+  },
 };
 </script>
 
