@@ -3,6 +3,9 @@
     <section v-if="$store.state.username">
       <header>
         <h2>{{ $route.params.username }}</h2>
+        <h4>
+          {{ freets.length }} {{ freets.length === 1 ? "freet" : "freets" }}
+        </h4>
       </header>
       <FollowButton
         v-if="$route.params.username !== $store.state.username"
@@ -64,8 +67,7 @@ export default {
   },
   mounted() {
     this.getFreets();
-    console.log(this.$store.state.userMap.get(this.$route.params.username));
-    console.log(this.$route.params.username);
+    console.log(this.$store.state.users);
   },
 };
 </script>

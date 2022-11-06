@@ -138,11 +138,9 @@ export default {
   },
   computed: {
     filteredContent() {
-      console.log("RECALCULATING");
       return this.$store.state.filteredContent;
     },
     freets() {
-      console.log("RECALCULATING FREETS");
       return this.$store.state.freets;
     },
   },
