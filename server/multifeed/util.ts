@@ -6,7 +6,7 @@ import type { Multifeed, PopulatedMultifeed } from "./model";
 type MultifeedResponse = {
   _id: string;
   authorId: string;
-  content: Object;
+  content: Array<string>;
   name: string;
 };
 
@@ -22,7 +22,7 @@ const constructMultifeedResponse = (
   return {
     _id: multifeed._id.toString(),
     authorId: multifeed.authorId.toString(),
-    content: Object.fromEntries(content),
+    content: multifeedCopy.content.map((user) => user.username.toString()),
     name: multifeed.name.toString(),
   };
 };

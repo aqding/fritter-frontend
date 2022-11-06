@@ -19,7 +19,7 @@ class FollowCollection {
 
     const follow = new FollowModel({ follower, followee, dateCreated: date });
     await follow.save();
-    return follow;
+    return follow.populate(["follower", "followee"]);
   }
 
   static async findOneByUsers(

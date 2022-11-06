@@ -7,6 +7,16 @@
         <h2>Welcome @{{ $store.state.username }}</h2>
       </header>
       <CreateFreetForm />
+      <modal name="editing" height="90%">
+        <EditMultifeedForm
+          :multifeed="$store.state.multifeeds[$store.state.editingMultifeed]"
+          :callback="hide"
+        />
+      </modal>
+
+      <modal name="add" height="90%">
+        <AddMultifeedForm :callback="hideAdd" />
+      </modal>
     </section>
     <section v-else>
       <header>
@@ -23,27 +33,77 @@
       <header>
         <div class="left">
           <h2>
-            Viewing all freets
+            Viewing: {{ $store.state.activeMultifeed }}
             <span v-if="$store.state.filter">
               by @{{ $store.state.filter }}
             </span>
           </h2>
         </div>
-        <div class="right">
-          <GetFreetsForm
-            ref="getFreetsForm"
-            value="author"
-            placeholder="🔍 Filter by author (optional)"
-            button="🔄 Get freets"
-          />
-        </div>
+        <div class="right"></div>
+
+        <dropdown-menu direction="right" :withDropdownCloser="true">
+          <button slot="trigger">Multifeeds</button>
+          <div slot="header">Select a Multifeed</div>
+          <ul slot="body">
+            <li
+              dropdown-closer
+              @click="
+                $store.commit('updateActiveMultifeed', 'All');
+                $store.commit('updateFilteredContent', null);
+              "
+            >
+              All
+            </li>
+
+            <li
+              dropdown-closer
+              @click="
+                $store.commit('updateActiveMultifeed', 'Following');
+                $store.commit('updateFilteredContent', $store.state.following);
+              "
+            >
+              Following
+            </li>
+            <li
+              dropdown-closer
+              v-for="(multifeed, index) in $store.state.multifeeds"
+            >
+              <div
+                @click="
+                  $store.commit('updateActiveMultifeed', multifeed.name);
+                  $store.commit('updateFilteredContent', multifeed.content);
+                "
+              >
+                {{ multifeed.name }}
+              </div>
+              <button
+                @click="
+                  $store.commit('updateEditingMultifeed', index);
+                  show();
+                "
+              >
+                Edit
+              </button>
+            </li>
+
+            <li dropdown-closer>
+              <button @click="showAdd()">New Multifeed</button>
+            </li>
+          </ul>
+          <!-- <div slot="footer">Dropdown Footer</div> -->
+        </dropdown-menu>
       </header>
       <section v-if="$store.state.freets.length">
-        <FreetComponent
-          v-for="freet in $store.state.freets"
-          :key="freet.id"
-          :freet="freet"
-        />
+        <div v-for="freet in freets">
+          <FreetComponent
+            v-if="
+              $store.state.activeMultifeed === 'All' ||
+              filteredContent.has(freet.author)
+            "
+            :key="freet.id"
+            :freet="freet"
+          />
+        </div>
       </section>
       <article v-else>
         <h3>No freets found.</h3>
@@ -55,13 +115,137 @@
 <script>
 import FreetComponent from "@/components/Freet/FreetComponent.vue";
 import CreateFreetForm from "@/components/Freet/CreateFreetForm.vue";
-import GetFreetsForm from "@/components/Freet/GetFreetsForm.vue";
+import MultifeedComponent from "@/components/Multifeed/MultifeedComponent.vue";
+import EditMultifeedForm from "@/components/Multifeed/EditMultifeedForm.vue";
+import AddMultifeedForm from "@/components/Multifeed/AddMultifeedForm.vue";
+import { Slide, FallDown } from "vue-burger-menu";
+import DropdownMenu from "v-dropdown-menu";
+import "v-dropdown-menu/dist/v-dropdown-menu.css";
+import VModal from "vue-js-modal";
 
 export default {
   name: "FreetPage",
-  components: { FreetComponent, GetFreetsForm, CreateFreetForm },
+  components: {
+    FreetComponent,
+    CreateFreetForm,
+    Slide,
+    FallDown,
+    DropdownMenu,
+    VModal,
+    MultifeedComponent,
+    EditMultifeedForm,
+    AddMultifeedForm,
+  },
+  computed: {
+    filteredContent() {
+      console.log("RECALCULATING");
+      return this.$store.state.filteredContent;
+    },
+    freets() {
+      console.log("RECALCULATING FREETS");
+      return this.$store.state.freets;
+    },
+  },
+  methods: {
+    async getFollowing() {
+      const url = `/api/follow/following/${this.$store.state.id}`;
+      try {
+        const r = await fetch(url);
+        const res = await r.json();
+        if (!r.ok) {
+          throw new Error(res.error);
+        }
+        this.$store.commit(
+          "updateFollowing",
+          new Set(res.following.map((follow) => follow.followeeName))
+        );
+      } catch (e) {
+        this.$set(this.alerts, e, "error");
+        setTimeout(() => this.$delete(this.alerts, e), 3000);
+      }
+    },
+
+    async getMultifeeds() {
+      const url = `/api/multifeed/user?author=${this.$store.state.id}`;
+      console.log(url);
+      try {
+        const r = await fetch(url);
+        const res = await r.json();
+        console.log(res);
+        if (!r.ok) {
+          throw new Error(res.error);
+        }
+
+        this.$store.commit("updateMultifeeds", res);
+        this.$store.commit("updateActiveMultifeed", "All");
+        this.$store.commit("updateFilteredContent", null);
+        console.log(this.$store.state.multifeeds);
+      } catch (e) {
+        this.$set(this.alerts, e, "error");
+        setTimeout(() => this.$delete(this.alerts, e), 3000);
+      }
+    },
+
+    async getFreetsInit() {
+      const url = "/api/freets";
+      try {
+        const r = await fetch(url);
+        const res = await r.json();
+        if (!r.ok) {
+          throw new Error(res.error);
+        }
+
+        this.$store.commit("updateFreets", res);
+        console.log(this.$store.state.freets);
+      } catch (e) {
+        this.$set(this.alerts, e, "error");
+        setTimeout(() => this.$delete(this.alerts, e), 3000);
+      }
+    },
+
+    async getUsersInit() {
+      const url = "/api/users";
+      try {
+        const r = await fetch(url);
+        const res = await r.json();
+        if (!r.ok) {
+          throw new Error(res.error);
+        }
+        console.log(res);
+        const newMap = new Map(
+          res.map((object) => [object.username, object._id])
+        );
+        this.$store.commit("updateUserMap", newMap);
+        this.$store.commit(
+          "updateUsers",
+          res.map((user) => user.username)
+        );
+        console.log(this.$store.state.users);
+        console.log(this.$store.state.userMap);
+      } catch (e) {
+        this.$set(this.alerts, e, "error");
+        setTimeout(() => this.$delete(this.alerts, e), 3000);
+      }
+    },
+    show() {
+      this.$modal.show("editing");
+    },
+    hide() {
+      this.$modal.hide("editing");
+    },
+    showAdd() {
+      this.$modal.show("add");
+    },
+    hideAdd() {
+      this.$modal.hide("add");
+    },
+  },
+
   mounted() {
-    this.$refs.getFreetsForm.submit();
+    this.getFreetsInit();
+    this.getFollowing();
+    this.getMultifeeds();
+    this.getUsersInit();
   },
 };
 </script>

@@ -59,7 +59,7 @@ const isValidContent = async (
   res: Response,
   next: NextFunction
 ) => {
-  if (!Array.isArray(JSON.parse(req.body.content))) {
+  if (!Array.isArray(req.body.content)) {
     res.status(404).json({
       error: {
         invalidRequest: "content should be an array of IDs.",
@@ -69,16 +69,13 @@ const isValidContent = async (
   }
 
   let valid = true;
-  await JSON.parse(req.body.content).map(
-    async (id: Types.ObjectId | string) => {
-      const validUser = Types.ObjectId.isValid(id);
-      const user = validUser ? await UserCollection.findOneByUserId(id) : "";
-      if (!user) {
-        valid = false;
-      }
+  await req.body.content.map(async (name: string) => {
+    const user = await UserCollection.findOneByUsername(name);
+    if (!user) {
+      valid = false;
     }
-  );
-  if (valid && !JSON.parse(req.body.content).includes(req.body.userId)) {
+  });
+  if (valid) {
     next();
   } else {
     res.status(404).json({

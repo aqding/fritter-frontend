@@ -102,10 +102,10 @@ router.post(
     const multifeed = await MultifeedCollection.addOne(
       req.session.userId,
       req.body.name,
-      JSON.parse(req.body.content)
+      req.body.content
     );
 
-    JSON.parse(req.body.content).map(async (user: string) => {
+    req.body.content.map(async (user: string) => {
       const followRelation = await FollowCollection.findOneByUsers(
         req.session.userId,
         user
@@ -158,10 +158,10 @@ router.put(
     const multifeed = await MultifeedCollection.updateOne(
       req.body.multifeedId,
       req.body.name,
-      JSON.parse(req.body.content)
+      req.body.content
     );
 
-    JSON.parse(req.body.content).map(async (user: string) => {
+    req.body.content.map(async (user: string) => {
       const followRelation = await FollowCollection.findOneByUsers(
         req.session.userId,
         user

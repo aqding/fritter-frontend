@@ -14,6 +14,13 @@ const store = new Vuex.Store({
     username: null, // Username of the logged in user
     id: null,
     alerts: {}, // global success/error messages encountered during submissions to non-visible forms
+    following: new Set([]),
+    multifeeds: [],
+    activeMultifeed: "All",
+    filteredContent: new Set([]),
+    editingMultifeed: null,
+    users: [],
+    userMap: new Map([]),
   },
   mutations: {
     alert(state, payload) {
@@ -62,6 +69,46 @@ const store = new Vuex.Store({
         : "/api/freets";
       const res = await fetch(url).then(async (r) => r.json());
       state.freets = res;
+    },
+
+    updateFollowing(state, following) {
+      state.following = new Set([...following]);
+    },
+
+    updateMultifeeds(state, multifeeds) {
+      state.multifeeds = multifeeds;
+    },
+
+    async refreshMultifeeds(state) {
+      console.log("REFRESHING MULTIFEEDS");
+      const url = `/api/multifeed/user?author=${state.id}`;
+      const res = await fetch(url).then(async (r) => r.json());
+      state.multifeeds = res;
+    },
+
+    updateActiveMultifeed(state, multifeed) {
+      state.activeMultifeed = multifeed;
+    },
+
+    updateFilteredContent(state, content) {
+      if (!content) {
+        state.filteredContent = new Set([]);
+      } else {
+        state.filteredContent = new Set([...content]);
+      }
+    },
+
+    updateEditingMultifeed(state, index) {
+      state.editingMultifeed = index;
+    },
+
+    updateUsers(state, users) {
+      state.users = users;
+      state.users.splice(state.users.indexOf(state.username), 1);
+    },
+
+    updateUserMap(state, userMap) {
+      state.userMap = userMap;
     },
   },
   // Store data across page refreshes, only discard on browser close

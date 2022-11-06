@@ -1,0 +1,89 @@
+<template>
+  <button v-if="following.has(`${author}`)" @click="unfollow">Unfollow</button>
+
+  <button v-else @click="follow">Follow</button>
+</template>
+
+<script>
+export default {
+  name: "FollowButton",
+  props: {
+    author: {
+      type: String,
+      required: true,
+    },
+    authorId: {
+      type: String,
+      required: true,
+    },
+  },
+  computed: {
+    following() {
+      return this.$store.state.following;
+    },
+  },
+  methods: {
+    async follow() {
+      const options = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        message: "Successfully followed!",
+        body: JSON.stringify({
+          follower: this.$store.state.id,
+          followee: this.authorId,
+        }),
+        callback: () => {
+          this.$set(this.alerts, params.message, "success");
+          setTimeout(() => this.$delete(this.alerts, params.message), 3000);
+        },
+      };
+      try {
+        const r = await fetch(`/api/follow`, options);
+        if (!r.ok) {
+          const res = await r.json();
+          throw new Error(res.error);
+        }
+
+        const newSet = this.$store.state.following;
+        newSet.add(this.author);
+        this.$store.commit("updateFollowing", newSet);
+      } catch (e) {
+        this.$set(this.alerts, e, "error");
+        setTimeout(() => this.$delete(this.alerts, e), 3000);
+      }
+    },
+    async unfollow() {
+      const options = {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        message: "Successfully unfollowed!",
+        body: JSON.stringify({
+          follower: this.$store.state.id,
+          followee: this.authorId,
+        }),
+        callback: () => {
+          this.$set(this.alerts, params.message, "success");
+          setTimeout(() => this.$delete(this.alerts, params.message), 3000);
+        },
+      };
+      try {
+        const r = await fetch(`/api/follow`, options);
+        if (!r.ok) {
+          const res = await r.json();
+          console.log(res);
+          throw new Error(res.error);
+        }
+
+        const newSet = this.$store.state.following;
+        newSet.delete(this.author);
+        this.$store.commit("updateFollowing", newSet);
+      } catch (e) {
+        this.$set(this.alerts, e, "error");
+        setTimeout(() => this.$delete(this.alerts, e), 3000);
+      }
+    },
+  },
+};
+</script>

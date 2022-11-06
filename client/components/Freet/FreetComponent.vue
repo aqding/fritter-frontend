@@ -4,7 +4,13 @@
 <template>
   <article class="freet">
     <header>
-      <h3 class="author">@{{ freet.author }}</h3>
+      <router-link
+        class="author:"
+        v-if="$store.state.username"
+        :to="'/profile/' + freet.author"
+      >
+        @{{ freet.author }}
+      </router-link>
       <!-- <h3>{{ freet._id }}</h3> -->
       <div v-if="$store.state.username === freet.author" class="actions">
         <button v-if="editing" @click="submitEdit">✅ Save changes</button>
@@ -27,6 +33,11 @@
         This content has been hidden. Click to see it anyways.
       </p>
     </div>
+    <FollowButton
+      v-if="freet.author !== $store.state.username && !$route.params.username"
+      :author="freet.author"
+      :authorId="freet.authorId"
+    />
     <VotePanel ref="votes" :freetId="freet._id" :callback="setHidden" />
     <p class="info">
       Posted at {{ freet.dateModified }}
@@ -46,14 +57,14 @@
 
 <script>
 import VotePanel from "@/components/Vote/VotePanel.vue";
-
+import FollowButton from "@/components/Follow/FollowButton.vue";
 export default {
   name: "FreetComponent",
   components: {
     VotePanel,
+    FollowButton,
   },
   props: {
-    // Data from the stored freet
     freet: {
       type: Object,
       required: true,
@@ -67,7 +78,7 @@ export default {
       alerts: {}, // Displays success/error messages encountered during freet modification
     };
   },
-  updated() {},
+  mounted() {},
 
   methods: {
     setHidden() {
