@@ -4,6 +4,11 @@
       <header>
         <h2>{{ $route.params.username }}</h2>
       </header>
+      <FollowButton
+        v-if="$route.params.username !== $store.state.username"
+        :author="$route.params.username"
+        :authorId="$store.state.userMap.get($route.params.username)"
+      />
     </section>
     <section v-else>
       <header>
@@ -43,12 +48,13 @@
 
 <script>
 import FreetComponent from "@/components/Freet/FreetComponent.vue";
+import FollowButton from "@/components/Follow/FollowButton.vue";
 export default {
   name: "ProfilePage",
   data() {
     return { freets: [] };
   },
-  components: { FreetComponent },
+  components: { FreetComponent, FollowButton },
   methods: {
     getFreets() {
       this.freets = this.$store.state.freets.filter(
@@ -58,6 +64,8 @@ export default {
   },
   mounted() {
     this.getFreets();
+    console.log(this.$store.state.userMap.get(this.$route.params.username));
+    console.log(this.$route.params.username);
   },
 };
 </script>

@@ -38,6 +38,7 @@ export default {
           setTimeout(() => this.$delete(this.alerts, params.message), 3000);
         },
       };
+      console.log(options);
       try {
         const r = await fetch(`/api/follow`, options);
         if (!r.ok) {
