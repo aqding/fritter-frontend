@@ -3,66 +3,70 @@
 
 <template>
   <article class="freet">
-    <header>
-      <router-link
-        class="author:"
-        v-if="$store.state.username"
-        :to="'/profile/' + freet.author"
-      >
-        @{{ freet.author }}
-      </router-link>
-      <!-- <h3>{{ freet._id }}</h3> -->
-      <div v-if="$store.state.username === freet.author" class="actions">
-        <button v-if="editing" @click="submitEdit">✅ Save changes</button>
-        <button v-if="editing" @click="stopEditing">🚫 Discard changes</button>
-        <button v-if="!editing" @click="startEditing">✏️ Edit</button>
-        <button @click="deleteFreet">🗑️ Delete</button>
+    <div>
+      <header>
+        <p class="author">
+          <router-link
+            class="author: unlink"
+            v-if="$store.state.username"
+            :to="'/profile/' + freet.author"
+          >
+            @{{ freet.author }}
+          </router-link>
+        </p>
+        <i class="date">{{ freet.dateModified }}</i>
+      </header>
+      <textarea
+        v-if="editing"
+        class="content"
+        :value="draft"
+        @input="draft = $event.target.value"
+      />
+      <div v-else class="content">
+        <p v-if="!hidden">
+          {{ freet.content }}
+        </p>
+        <p v-else @click="setHidden">
+          <i>This content has been hidden. Click to see it anyways.</i>
+        </p>
       </div>
-    </header>
-    <textarea
-      v-if="editing"
-      class="content"
-      :value="draft"
-      @input="draft = $event.target.value"
-    />
-    <div v-else class="content">
-      <p v-if="!hidden">
-        {{ freet.content }}
-      </p>
-      <p v-else @click="setHidden">
-        This content has been hidden. Click to see it anyways.
-      </p>
+      <VotePanel ref="votes" :freetId="freet._id" :callback="setHidden" />
+
+      <section class="alerts">
+        <article
+          v-for="(status, alert, index) in alerts"
+          :key="index"
+          :class="status"
+        >
+          <p>{{ alert }}</p>
+        </article>
+      </section>
+    </div>
+    <div v-if="$store.state.username === freet.author" class="actions">
+      <button v-if="editing" @click="submitEdit">Save</button>
+      <button v-if="editing" @click="stopEditing">Cancel</button>
+      <button v-if="!editing" @click="startEditing">Edit</button>
+      <button @click="deleteFreet" class="red">Delete</button>
     </div>
     <FollowButton
+      class="follow"
       v-if="freet.author !== $store.state.username && !$route.params.username"
       :author="freet.author"
       :authorId="freet.authorId"
     />
-    <VotePanel ref="votes" :freetId="freet._id" :callback="setHidden" />
-    <p class="info">
-      Posted at {{ freet.dateModified }}
-      <i v-if="freet.edited">(edited)</i>
-    </p>
-    <section class="alerts">
-      <article
-        v-for="(status, alert, index) in alerts"
-        :key="index"
-        :class="status"
-      >
-        <p>{{ alert }}</p>
-      </article>
-    </section>
   </article>
 </template>
 
 <script>
 import VotePanel from "@/components/Vote/VotePanel.vue";
 import FollowButton from "@/components/Follow/FollowButton.vue";
+import { Icon } from "@iconify/vue2";
 export default {
   name: "FreetComponent",
   components: {
     VotePanel,
     FollowButton,
+    Icon,
   },
   props: {
     freet: {
@@ -176,5 +180,58 @@ export default {
   border: 1px solid #111;
   padding: 20px;
   position: relative;
+  border-color: white;
+  margin-bottom: 40px;
+  border-radius: 20px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+}
+
+.author {
+  font-size: 30px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.date {
+  font-size: 16px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 1.5rem;
+}
+
+.follow {
+  margin-top: 1.5rem;
+}
+button {
+  border-radius: 15px;
+  height: 30px;
+  width: 70px;
+  color: white;
+  transition: 0.5s;
+  font-size: 14px;
+}
+
+button:hover {
+  background-color: rgb(21, 120, 138);
+}
+
+textarea {
+  resize: none;
+  width: 300%;
+  height: 4rem;
+}
+
+.red {
+  background-color: rgb(209, 31, 31);
+}
+
+.red:hover {
+  background-color: rgb(145, 22, 22);
 }
 </style>

@@ -3,17 +3,13 @@
 
 <template>
   <main>
+    <h1>Account Settings</h1>
     <section>
-      <header>
-        <h2>Account settings for @{{ $store.state.username }}</h2>
-      </header>
       <ChangeUsernameForm />
       <ChangePasswordForm />
     </section>
     <section>
-      <header>
-        <h2>Account management</h2>
-      </header>
+      <h1>Account management</h1>
       <LogoutForm />
       <DeleteAccountForm />
     </section>
@@ -21,18 +17,18 @@
 </template>
 
 <script>
-import ChangeUsernameForm from '@/components/Account/ChangeUsernameForm.vue';
-import ChangePasswordForm from '@/components/Account/ChangePasswordForm.vue';
-import DeleteAccountForm from '@/components/Account/DeleteAccountForm.vue';
-import LogoutForm from '@/components/Account/LogoutForm.vue';
+import ChangeUsernameForm from "@/components/Account/ChangeUsernameForm.vue";
+import ChangePasswordForm from "@/components/Account/ChangePasswordForm.vue";
+import DeleteAccountForm from "@/components/Account/DeleteAccountForm.vue";
+import LogoutForm from "@/components/Account/LogoutForm.vue";
 
 export default {
-  name: 'AccountPage',
+  name: "AccountPage",
   components: {
     ChangeUsernameForm,
     ChangePasswordForm,
     DeleteAccountForm,
-    LogoutForm
-  }
+    LogoutForm,
+  },
 };
 </script>

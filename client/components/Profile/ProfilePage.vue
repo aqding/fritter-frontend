@@ -1,12 +1,11 @@
 <template>
   <main>
     <section v-if="$store.state.username">
-      <header>
-        <h2>{{ $route.params.username }}</h2>
-        <h4>
-          {{ freets.length }} {{ freets.length === 1 ? "freet" : "freets" }}
-        </h4>
-      </header>
+      <h1 class="name">{{ $route.params.username }}</h1>
+      <div>
+        {{ freets.length }} {{ freets.length === 1 ? "freet" : "freets" }}
+      </div>
+
       <FollowButton
         v-if="$route.params.username !== $store.state.username"
         :author="$route.params.username"
@@ -71,3 +70,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.name {
+  font-size: 50px;
+  margin-bottom: 0px;
+}
+</style>

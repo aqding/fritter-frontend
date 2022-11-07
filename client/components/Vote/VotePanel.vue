@@ -1,22 +1,20 @@
 <template>
-  <div>
+  <div class="panel">
     <div>
       <UpvoteButton
         :freetId="freetId"
         :callback="changeUserVote"
-        :class="{ green: this.userVote === 1 }"
+        :userVote="userVote"
       />
     </div>
-
+    <div>{{ this.upvotes - this.downvotes + this.userVote }}</div>
     <div>
       <DownvoteButton
         :freetId="freetId"
         :callback="changeUserVote"
-        :class="{ red: this.userVote === -1 }"
+        :userVote="userVote"
       />
     </div>
-
-    <div>Total Votes:{{ this.upvotes - this.downvotes + this.userVote }}</div>
   </div>
 </template>
 
@@ -85,5 +83,12 @@ export default {
 
 .red {
   background-color: red;
+}
+
+.panel {
+  display: flex;
+  align-items: center;
+  width: 5.5rem;
+  justify-content: space-between;
 }
 </style>

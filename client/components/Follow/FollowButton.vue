@@ -1,5 +1,7 @@
 <template>
-  <button v-if="following.has(`${author}`)" @click="unfollow">Unfollow</button>
+  <button class="unfollow" v-if="following.has(`${author}`)" @click="unfollow">
+    Unfollow
+  </button>
 
   <button v-else @click="follow">Follow</button>
 </template>
@@ -88,3 +90,33 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+button {
+  width: 70px;
+  background-color: rgb(47, 187, 212);
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+  transition: 0.5s;
+  color: white;
+  width: 90px;
+  height: 30px;
+  border-radius: 15px;
+  margin-top: 10px;
+}
+
+button:hover {
+  background-color: rgb(21, 120, 138);
+}
+
+.unfollow {
+  background-color: rgb(209, 31, 31);
+}
+
+.unfollow:hover {
+  background-color: rgb(145, 22, 22);
+}
+</style>

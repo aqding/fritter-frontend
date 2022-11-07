@@ -1,17 +1,22 @@
 <template>
-  <form>
-    <h3>
-      <input v-model="name" type="text" />
-      <!-- {{ name }} -->
-    </h3>
+  <form class="formBackground">
+    <div class="formContent">
+      <div>
+        <input v-model="name" type="text" placeholder="Multifeed Name" />
+      </div>
 
-    <div>
-      <div v-for="user in $store.state.users">
-        <div>{{ user }}</div>
-        <button v-if="content.includes(user)" @click="remove(user)">
-          Remove
-        </button>
-        <button v-else @click="add(user)">Add</button>
+      <div class="userContainer">
+        <div class="row" v-for="user in $store.state.users">
+          <div class="userName">@{{ user }}</div>
+          <button
+            class="red"
+            v-if="content.includes(user)"
+            @click="remove(user)"
+          >
+            Remove
+          </button>
+          <button v-else @click="add(user)">Add</button>
+        </div>
       </div>
       <button
         @click="
@@ -22,6 +27,7 @@
         Confirm
       </button>
       <button
+        class="red"
         v-if="!creating"
         @click="
           deleteMultifeed();
@@ -134,3 +140,69 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.formBackground {
+  background-color: rgb(30, 30, 30);
+  height: 100%;
+  overflow: scroll;
+}
+
+.formContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 4rem;
+  gap: 2rem;
+}
+
+input {
+  background-color: rgb(30, 30, 30);
+  border: 1px solid;
+  border-color: rgb(118, 118, 118);
+  border-radius: 10px;
+  height: 40px;
+  font-size: 24px;
+  padding: 8px;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.row {
+  display: flex;
+  width: 60%;
+  justify-content: space-between;
+  gap: 2rem;
+  align-items: center;
+}
+
+.userContainer {
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  align-items: center;
+  gap: 1rem;
+}
+
+.userName {
+  font-size: 25px;
+}
+button {
+  border-radius: 30px;
+  height: 40px;
+  width: 80px;
+  color: white;
+  transition: 0.5s;
+}
+button:hover {
+  background-color: rgb(21, 120, 138);
+}
+
+.red {
+  background-color: rgb(209, 31, 31);
+}
+
+.red:hover {
+  background-color: rgb(145, 22, 22);
+}
+</style>

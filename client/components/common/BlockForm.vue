@@ -7,14 +7,7 @@
     <article v-if="fields.length">
       <div v-for="field in fields" :key="field.id">
         <label :for="field.id">{{ field.label }}:</label>
-        <textarea
-          v-if="field.id === 'content'"
-          :name="field.id"
-          :value="field.value"
-          @input="field.value = $event.target.value"
-        />
         <input
-          v-else
           :type="field.id === 'password' ? 'password' : 'text'"
           :name="field.id"
           :value="field.value"
@@ -23,11 +16,12 @@
       </div>
     </article>
     <article v-else>
-      <p>{{ content }}</p>
+      <p>
+        <i>{{ content }}</i>
+      </p>
     </article>
-    <button type="submit">
-      {{ title }}
-    </button>
+    <button class="red" v-if="!fields.length" type="submit">Confirm</button>
+    <button v-else type="submit">Confirm</button>
     <section class="alerts">
       <article
         v-for="(status, alert, index) in alerts"
@@ -142,8 +136,35 @@ form h3 {
   margin-top: 0;
 }
 
-textarea {
-  font-family: inherit;
-  font-size: inherit;
+input {
+  background-color: rgb(30, 30, 30);
+  border: 1px solid;
+  border-color: rgb(118, 118, 118);
+  border-radius: 10px;
+  height: 40px;
+  font-size: 16px;
+  padding: 8px;
+  margin-bottom: 0.5rem;
+  margin-top: 1rem;
+  width: 20%;
+}
+
+button {
+  border-radius: 30px;
+  height: 40px;
+  width: 80px;
+  color: white;
+  transition: 0.5s;
+}
+button:hover {
+  background-color: rgb(21, 120, 138);
+}
+
+.red {
+  background-color: rgb(209, 31, 31);
+}
+
+.red:hover {
+  background-color: rgb(145, 22, 22);
 }
 </style>
