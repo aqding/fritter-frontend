@@ -13,6 +13,9 @@
           >
             @{{ freet.author }}
           </router-link>
+          <router-link v-else :to="'/'" class="unlink">
+            @{{ freet.author }}
+          </router-link>
         </p>
         <i class="date">{{ freet.dateModified }}</i>
       </header>

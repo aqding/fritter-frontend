@@ -18,8 +18,8 @@
       </header>
       <article>
         <h3>
-          <router-link to="/login"> Sign in </router-link>
-          to create, edit, and delete freets.
+          <router-link to="/login" class="unlink"> Sign in </router-link>to
+          create Freets, view profiles, follow friends, and more!
         </h3>
       </article>
     </section>

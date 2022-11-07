@@ -5,6 +5,13 @@
         :freetId="freetId"
         :callback="changeUserVote"
         :userVote="userVote"
+        v-if="$store.state.username"
+      />
+      <UpvoteButton
+        :freetId="freetId"
+        :callback="() => {}"
+        :userVote="userVote"
+        v-else
       />
     </div>
     <div>{{ this.upvotes - this.downvotes + this.userVote }}</div>
@@ -13,6 +20,13 @@
         :freetId="freetId"
         :callback="changeUserVote"
         :userVote="userVote"
+        v-if="$store.state.username"
+      />
+      <DownvoteButton
+        :freetId="freetId"
+        :callback="() => {}"
+        :userVote="userVote"
+        v-else
       />
     </div>
   </div>
